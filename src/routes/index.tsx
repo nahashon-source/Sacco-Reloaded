@@ -1,7 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { Loader } from '@/components/common/Loader';
 
 const MainLayout = lazy(() => import('@/layouts/MainLayout').then((m) => ({ default: m.MainLayout })));
@@ -19,10 +18,11 @@ export const AppRoutes = () => {
           <Route path="/login" element={<LoginPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<DashboardPage />} />
-          </Route>
+        {/* TEMP: dashboard is public during frontend-only dev.
+            Re-wrap with <Route element={<ProtectedRoute />}> once auth
+            is ready to enforce. See routes/ProtectedRoute.tsx. */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<DashboardPage />} />
         </Route>
 
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
