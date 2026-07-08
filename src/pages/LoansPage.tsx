@@ -5,16 +5,19 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { DataTable, type DataTableColumn } from '@/components/common/DataTable';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { useLoans, useApproveLoan, useRejectLoan } from '@/features/loans';
+import { useLoans, useApproveLoan } from '@/features/loans';
 import type { Loan } from '@/features/loans';
 import { LoanApplicationModal } from '@/features/loans/components/LoanApplicationModal';
+import { RejectLoanModal } from '@/features/loans/components/RejectLoanModal';
 import { formatCurrency, formatDate } from '@/utils/helpers';
 
 const LoansPage = () => {
   const { data, isLoading, isError } = useLoans();
   const approveLoan = useApproveLoan();
-  const rejectLoan = useRejectLoan();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<{ id: number; loanNumber: string } | null>(
+    null
+  );
 
   const columns: DataTableColumn<Loan>[] = [
     { key: 'loanNumber', header: 'Loan #', render: (l) => l.loanNumber },
@@ -44,9 +47,8 @@ const LoansPage = () => {
             <button
               type="button"
               aria-label={`Reject loan ${l.loanNumber}`}
-              onClick={() => rejectLoan.mutate({ id: l.id, reason: 'Rejected by staff' })}
-              disabled={rejectLoan.isPending}
-              className="rounded-[var(--radius-sm)] p-1.5 text-[var(--color-danger)] hover:bg-[var(--color-surface-secondary)] disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
+              onClick={() => setRejectTarget({ id: l.id, loanNumber: l.loanNumber })}
+              className="rounded-[var(--radius-sm)] p-1.5 text-[var(--color-danger)] hover:bg-[var(--color-surface-secondary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
             >
               <X className="h-4 w-4" />
             </button>
@@ -63,7 +65,7 @@ const LoansPage = () => {
         title="Loans"
         description="Loan applications and active loans."
         action={
-          <Button onClick={() => setIsModalOpen(true)}>
+          <Button onClick={() => setIsApplyModalOpen(true)}>
             <FilePlus className="h-4 w-4" aria-hidden="true" />
             New Application
           </Button>
@@ -80,7 +82,14 @@ const LoansPage = () => {
         />
       </Card>
 
-      <LoanApplicationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <LoanApplicationModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+
+      <RejectLoanModal
+        isOpen={rejectTarget !== null}
+        onClose={() => setRejectTarget(null)}
+        loanId={rejectTarget?.id ?? null}
+        loanNumber={rejectTarget?.loanNumber ?? null}
+      />
     </div>
   );
 };
