@@ -1,8 +1,13 @@
+import { useState } from 'react';
+import { UserPlus } from 'lucide-react';
+
 import { PageHeader } from '@/components/common/PageHeader';
 import { DataTable, type DataTableColumn } from '@/components/common/DataTable';
 import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { useMembers } from '@/features/members';
 import type { Member } from '@/features/members';
+import { MemberFormModal } from '@/features/members/components/MemberFormModal';
 import { formatDate } from '@/utils/helpers';
 
 const columns: DataTableColumn<Member>[] = [
@@ -16,10 +21,20 @@ const columns: DataTableColumn<Member>[] = [
 
 const MembersPage = () => {
   const { data, isLoading, isError } = useMembers();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div>
-      <PageHeader title="Members" description="All registered SACCO members." />
+      <PageHeader
+        title="Members"
+        description="All registered SACCO members."
+        action={
+          <Button onClick={() => setIsModalOpen(true)}>
+            <UserPlus className="h-4 w-4" aria-hidden="true" />
+            Add Member
+          </Button>
+        }
+      />
       <Card>
         <DataTable
           columns={columns}
@@ -30,6 +45,8 @@ const MembersPage = () => {
           emptyMessage="No members yet."
         />
       </Card>
+
+      <MemberFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
