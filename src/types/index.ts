@@ -1,6 +1,7 @@
 /**
  * Global shared types. Feature-specific domain types (Member, Loan, etc.)
- * belong in their respective features/*/types.ts, not here.
+ * belong in their respective features folders (e.g. features/loans/types.ts),
+ * not here.
  */
 
 // Matches the backend's mandatory API response envelope.

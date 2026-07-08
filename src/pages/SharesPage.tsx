@@ -1,8 +1,13 @@
+import { useState } from 'react';
+import { PlusCircle } from 'lucide-react';
+
 import { PageHeader } from '@/components/common/PageHeader';
 import { DataTable, type DataTableColumn } from '@/components/common/DataTable';
 import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import { useShares } from '@/features/shares';
 import type { ShareAccount } from '@/features/shares';
+import { PurchaseSharesModal } from '@/features/shares/components/PurchaseSharesModal';
 import { formatCurrency, formatDate } from '@/utils/helpers';
 
 const columns: DataTableColumn<ShareAccount>[] = [
@@ -15,10 +20,20 @@ const columns: DataTableColumn<ShareAccount>[] = [
 
 const SharesPage = () => {
   const { data, isLoading, isError } = useShares();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div>
-      <PageHeader title="Shares" description="Member share capital holdings." />
+      <PageHeader
+        title="Shares"
+        description="Member share capital holdings."
+        action={
+          <Button onClick={() => setIsModalOpen(true)}>
+            <PlusCircle className="h-4 w-4" aria-hidden="true" />
+            Purchase Shares
+          </Button>
+        }
+      />
       <Card>
         <DataTable
           columns={columns}
@@ -29,6 +44,8 @@ const SharesPage = () => {
           emptyMessage="No share records yet."
         />
       </Card>
+
+      <PurchaseSharesModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };
