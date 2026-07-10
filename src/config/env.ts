@@ -18,6 +18,7 @@ const getRequiredEnv = (key: keyof ImportMetaEnv): string => {
 export const env = {
   apiBaseUrl: getRequiredEnv('VITE_API_BASE_URL'),
   appName: import.meta.env.VITE_APP_NAME || 'SACCO Management System',
+  enableMocks: import.meta.env.VITE_ENABLE_MOCKS === 'true',
   isDev: import.meta.env.DEV,
   isProd: import.meta.env.PROD,
 } as const;
