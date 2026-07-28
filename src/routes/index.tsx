@@ -9,6 +9,8 @@ const AuthLayout = lazy(() => import('@/layouts/AuthLayout').then((m) => ({ defa
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const MembersPage = lazy(() => import('@/pages/MembersPage'));
+const MemberDetailPage = lazy(() => import('@/pages/MemberDetailPage'));
+const BranchesPage = lazy(() => import('@/pages/BranchesPage'));
 const SavingsPage = lazy(() => import('@/pages/SavingsPage'));
 const SharesPage = lazy(() => import('@/pages/SharesPage'));
 const LoansPage = lazy(() => import('@/pages/LoansPage'));
@@ -29,12 +31,11 @@ export const AppRoutes = () => {
           <Route path="/login" element={<LoginPage />} />
         </Route>
 
-        {/* TEMP: all routes public during frontend-only dev.
-            Re-wrap with <Route element={<ProtectedRoute />}> once auth
-            is ready to enforce. See routes/ProtectedRoute.tsx. */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/members" element={<MembersPage />} />
+          <Route path="/members/:id" element={<MemberDetailPage />} />
+          <Route path="/branches" element={<BranchesPage />} />
           <Route path="/savings" element={<SavingsPage />} />
           <Route path="/shares" element={<SharesPage />} />
           <Route path="/loans" element={<LoansPage />} />

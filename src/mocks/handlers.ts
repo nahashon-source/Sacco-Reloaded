@@ -29,12 +29,24 @@ export const handlers = [
   // Members
   http.get(`${base}/members`, () => ok(paginated(mockMembers))),
   http.post(`${base}/members`, async ({ request }) => {
-    const body = (await request.json()) as { fullName: string; email: string; phoneNumber: string };
+    const body = (await request.json()) as {
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      branchId?: number | null;
+    };
     const newMember = {
       id: mockMembers.length + 1,
       memberNumber: `MEM-${String(mockMembers.length + 1).padStart(4, '0')}`,
-      ...body,
+      fullName: body.fullName,
+      email: body.email,
+      phoneNumber: body.phoneNumber,
+      branchId: body.branchId ?? null,
       status: 'active' as const,
+      kycStatus: 'pending' as const,
+      nextOfKin: null,
+      employment: null,
+      documents: [],
       joinedAt: new Date().toISOString(),
     };
     mockMembers.push(newMember);
@@ -109,6 +121,13 @@ export const handlers = [
     loan.status = 'rejected';
     return ok(loan, 'Loan rejected');
   }),
+  http.post(`${base}/loans/:id/disburse`, ({ params }) => {
+    const loan = mockLoans.find((l) => l.id === Number(params.id));
+    if (!loan) return HttpResponse.json({ success: false, message: 'Loan not found', data: null }, { status: 404 });
+    loan.status = 'disbursed';
+    loan.disbursedAt = new Date().toISOString();
+    return ok(loan, 'Loan disbursed');
+  }),
 
   // Guarantors
   http.get(`${base}/guarantors`, () => ok(paginated(mockGuarantors))),
@@ -162,18 +181,19 @@ export const handlers = [
     return ok(mockSettings, 'Settings updated');
   }),
 
-  // Reports (returns a minimal shaped result — real aggregation logic
-  // belongs entirely to the backend once it exists)
+  // Reports
   http.get(`${base}/reports`, ({ request }) => {
     const url = new URL(request.url);
     return ok({
       type: url.searchParams.get('type'),
       generatedAt: new Date().toISOString(),
-      data: { note: 'Mock report data — replace once backend reporting is implemented.' },
+      dateFrom: url.searchParams.get('date_from'),
+      dateTo: url.searchParams.get('date_to'),
+      data: { note: 'Mock report data — real aggregation only available via the real backend.' },
     });
   }),
 
-  // Auth (minimal — enough to unblock the login form in mock mode)
+  // Auth
   http.post(`${base}/auth/login`, () =>
     ok(
       {

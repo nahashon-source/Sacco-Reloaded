@@ -5,6 +5,8 @@ import type {
   CreateMemberPayload,
   UpdateMemberPayload,
   MemberListParams,
+  NextOfKin,
+  EmploymentInfo,
 } from '@/features/members/types';
 
 const membersKeys = {
@@ -39,6 +41,28 @@ export const useUpdateMember = (id: number) => {
   return useMutation({
     mutationFn: (payload: UpdateMemberPayload) => membersApi.update(id, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: membersKeys.all }),
+  });
+};
+
+export const useUpdateNextOfKin = (id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: NextOfKin) => membersApi.updateNextOfKin(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membersKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: membersKeys.all });
+    },
+  });
+};
+
+export const useUpdateEmployment = (id: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: EmploymentInfo) => membersApi.updateEmployment(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: membersKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: membersKeys.all });
+    },
   });
 };
 
